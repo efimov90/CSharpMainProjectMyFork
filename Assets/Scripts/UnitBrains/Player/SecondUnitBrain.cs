@@ -24,13 +24,16 @@ namespace UnitBrains.Player
                 return;
             }
 
-            // Ограничено температурой снятой в начале метода и температурой перегрева
-            for(var i = 0; i < currentTemperature && i < overheatTemperature; i++)
+            var shotsCount = currentTemperature + 1;
+
+            // Ограничено количеством выстрелов и температурой перегрева
+            for (var i = 1; i < shotsCount && i < overheatTemperature; i++)
             {
                 var projectile = CreateProjectile(forTarget);
-                IncreaseTemperature();
                 AddProjectileToList(projectile, intoList);
             }
+
+            IncreaseTemperature();
         }
 
         public override Vector2Int GetNextStep()
