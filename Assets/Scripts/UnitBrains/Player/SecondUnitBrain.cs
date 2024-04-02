@@ -19,14 +19,12 @@ namespace UnitBrains.Player
             
             var currentTemperature = GetTemperature();
 
-            if(overheatTemperature >= currentTemperature)
+            if (overheatTemperature == currentTemperature)
             {
                 return;
             }
 
             var shotsCount = currentTemperature + 1;
-
-            Debug.Log(shotsCount);
 
             for (var i = 0; i < shotsCount; i++)
             {
