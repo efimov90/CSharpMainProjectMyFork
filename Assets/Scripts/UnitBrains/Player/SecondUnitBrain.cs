@@ -26,8 +26,9 @@ namespace UnitBrains.Player
 
             var shotsCount = currentTemperature + 1;
 
-            // Limited by shots count and overheat temperature
-            for (var i = 0; i < shotsCount && i < overheatTemperature; i++)
+            Debug.Log(shotsCount);
+
+            for (var i = 0; i < shotsCount; i++)
             {
                 var projectile = CreateProjectile(forTarget);
                 AddProjectileToList(projectile, intoList);
