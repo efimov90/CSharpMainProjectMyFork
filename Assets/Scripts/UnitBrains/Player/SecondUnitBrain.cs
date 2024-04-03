@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Model;
 using Model.Runtime.Projectiles;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Utilities;
 
 namespace UnitBrains.Player
 {
@@ -12,6 +15,7 @@ namespace UnitBrains.Player
         private float _temperature = 0f;
         private float _cooldownTime = 0f;
         private bool _overheated;
+        private List<Vector2Int> _unreacheabletargets = new List<Vector2Int>();
         
         protected override void GenerateProjectiles(Vector2Int forTarget, List<BaseProjectile> intoList)
         {
@@ -37,37 +41,52 @@ namespace UnitBrains.Player
 
         public override Vector2Int GetNextStep()
         {
-            return base.GetNextStep();
+            Vector2Int position = Vector2Int.zero;
+
+            var target = _unreacheabletargets.FirstOrDefault();
+
+            if (target != null)
+            {
+                if (IsTargetInRange(target))
+                {
+                    position = unit.Pos;
+                }
+                else
+                {
+                    position = unit.Pos.CalcNextStepTowards(target);
+                }
+            }
+
+            return position;
         }
 
         protected override List<Vector2Int> SelectTargets()
         {
-            List<Vector2Int> result = GetReachableTargets();
+            var result = new List<Vector2Int>(GetAllTargets());
 
-            var closeseDistance = float.MaxValue;
-
-            var closestTarget = Vector2Int.zero;
-
-            foreach (var target in result)
+            if (result.Count == 0)
             {
-                var distanceToBase = DistanceToOwnBase(target);
-
-                if (distanceToBase < closeseDistance)
+                if (IsPlayerUnitBrain)
                 {
-                    closeseDistance = distanceToBase;
-                    closestTarget = target;
+                    result.Add(runtimeModel.RoMap.Bases[RuntimeModel.BotPlayerId]);
+                }
+                else
+                {
+                    result.Add(runtimeModel.RoMap.Bases[RuntimeModel.PlayerId]);
                 }
             }
 
-            if (closeseDistance != float.MaxValue)
-            {
-                result.Clear();
-                result.Add(closestTarget);
-            }
+            var closestTarget = GetClosestFrom(result);
 
-            while (result.Count > 1)
+            _unreacheabletargets.Clear();
+
+            _unreacheabletargets.Add(closestTarget.Value);
+
+            result.Clear();
+
+            if (IsTargetInRange(closestTarget.Value))
             {
-                result.RemoveAt(result.Count - 1);
+                result.Add(closestTarget.Value);
             }
 
             return result;
@@ -86,6 +105,31 @@ namespace UnitBrains.Player
                     _overheated = false;
                 }
             }
+        }
+
+        private Vector2Int? GetClosestFrom(List<Vector2Int> targets)
+        {
+            var closestDistance = float.MaxValue;
+
+            var closestTarget = Vector2Int.zero;
+
+            foreach (var target in targets)
+            {
+                var distanceToBase = DistanceToOwnBase(target);
+
+                if (distanceToBase < closestDistance)
+                {
+                    closestDistance = distanceToBase;
+                    closestTarget = target;
+                }
+            }
+
+            if (closestDistance != float.MaxValue)
+            {
+                return closestTarget;
+            }
+
+            return null;
         }
 
         private int GetTemperature()
