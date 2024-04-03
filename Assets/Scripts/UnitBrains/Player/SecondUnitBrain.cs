@@ -44,7 +44,7 @@ namespace UnitBrains.Player
         {
             List<Vector2Int> result = GetReachableTargets();
 
-            var closeseDistance = float.MaxValue;
+            var closestDistance = float.MaxValue;
 
             var closestTarget = Vector2Int.zero;
 
@@ -52,14 +52,14 @@ namespace UnitBrains.Player
             {
                 var distanceToBase = DistanceToOwnBase(target);
 
-                if (distanceToBase < closeseDistance)
+                if (distanceToBase < closestDistance)
                 {
-                    closeseDistance = distanceToBase;
+                    closestDistance = distanceToBase;
                     closestTarget = target;
                 }
             }
 
-            if (closeseDistance != float.MaxValue)
+            if (closestDistance != float.MaxValue)
             {
                 result.Clear();
                 result.Add(closestTarget);
