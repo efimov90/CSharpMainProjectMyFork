@@ -15,8 +15,18 @@ namespace UnitBrains.Player
         private float _temperature = 0f;
         private float _cooldownTime = 0f;
         private bool _overheated;
+
+        private const int MaxTargetsCount = 3;
+        private static int _unitNumberCounter = 0;
+        private int _unitNumber;
+
         private List<Vector2Int> _unreacheabletargets = new List<Vector2Int>();
-        
+
+        public SecondUnitBrain()
+        {
+            _unitNumber = _unitNumberCounter++;
+        }
+
         protected override void GenerateProjectiles(Vector2Int forTarget, List<BaseProjectile> intoList)
         {
             float overheatTemperature = OverheatTemperature;
@@ -76,17 +86,22 @@ namespace UnitBrains.Player
                 }
             }
 
-            var closestTarget = GetClosestFrom(result);
+            SortByDistanceToOwnBase(result);
 
             _unreacheabletargets.Clear();
 
-            _unreacheabletargets.Add(closestTarget.Value);
+            var currentCheckIndex = _unitNumber % Mathf.Min(MaxTargetsCount, result.Count);
+            var currentCheckTarget = result[currentCheckIndex];
 
             result.Clear();
 
-            if (IsTargetInRange(closestTarget.Value))
+            if (IsTargetInRange(currentCheckTarget))
             {
-                result.Add(closestTarget.Value);
+                result.Add(currentCheckTarget);
+            }
+            else
+            {
+                _unreacheabletargets.Add(currentCheckTarget);
             }
 
             return result;
@@ -105,31 +120,6 @@ namespace UnitBrains.Player
                     _overheated = false;
                 }
             }
-        }
-
-        private Vector2Int? GetClosestFrom(List<Vector2Int> targets)
-        {
-            var closestDistance = float.MaxValue;
-
-            var closestTarget = Vector2Int.zero;
-
-            foreach (var target in targets)
-            {
-                var distanceToBase = DistanceToOwnBase(target);
-
-                if (distanceToBase < closestDistance)
-                {
-                    closestDistance = distanceToBase;
-                    closestTarget = target;
-                }
-            }
-
-            if (closestDistance != float.MaxValue)
-            {
-                return closestTarget;
-            }
-
-            return null;
         }
 
         private int GetTemperature()
