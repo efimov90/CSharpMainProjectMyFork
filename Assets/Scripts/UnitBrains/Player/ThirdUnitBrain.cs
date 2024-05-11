@@ -48,7 +48,7 @@ public class ThirdUnitBrain : DefaultPlayerUnitBrain
     {
         var nextStep = base.GetNextStep();
         
-        if(_isRunMode && nextStep == unit.Pos && !_isChangingMode)
+        if (_isRunMode && nextStep == unit.Pos && !_isChangingMode)
         {
             _isChangingMode = true;
         }
