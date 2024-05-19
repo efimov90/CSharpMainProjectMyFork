@@ -4,13 +4,52 @@ using UnityEngine;
 
 public class ThirdUnitBrain : DefaultPlayerUnitBrain
 {
-    private const float _changingTime = 60f;
+    private const float _changingTime = 0.1f;
 
     public override string TargetUnitName => "Ironclad Behemoth";
+
     private bool _isRunMode = true;
     private bool _isAttackMode = false;
     private bool _isChangingMode = false;
-    private float _timeFromToChange = 0f;
+    private float _timeBeforeChange = 0f;
+
+    public float TimeBeforeChange
+    {
+        get => _timeBeforeChange;
+        set
+        {
+            if(_timeBeforeChange != value)
+            {
+                if (!_isChangingMode)
+                {
+                    _isChangingMode = true;
+                    _timeBeforeChange = value;
+                    return;
+                }
+
+                if(_timeBeforeChange < 0)
+                {
+                    _isChangingMode = false;
+                    _timeBeforeChange = 0f;
+
+                    if (_isAttackMode)
+                    {
+                        _isRunMode = true;
+                        _isAttackMode = false;
+                    }
+                    else if (_isRunMode)
+                    {
+                        _isRunMode = false;
+                        _isAttackMode = true;
+                    }
+                }
+                else
+                {
+                    _timeBeforeChange = value;
+                }
+            }
+        }
+    }
 
     public override void Update(float deltaTime, float time)
     {
@@ -18,42 +57,25 @@ public class ThirdUnitBrain : DefaultPlayerUnitBrain
 
         if (_isChangingMode)
         {
-            if (_timeFromToChange == 0f)
-            {
-                _timeFromToChange = _changingTime;
-            }
-
-            _timeFromToChange -= deltaTime;
-
-            if (_timeFromToChange <= 0f)
-            {
-                _isChangingMode = false;
-                _timeFromToChange = 0f;
-
-                if (_isAttackMode)
-                {
-                    _isRunMode = true;
-                    _isAttackMode = false;
-                }
-                else if (_isRunMode)
-                {
-                    _isRunMode = false;
-                    _isAttackMode = true;
-                }
-            }
+            TimeBeforeChange -= deltaTime;
         }
     }
 
     public override Vector2Int GetNextStep()
     {
         var nextStep = base.GetNextStep();
-        
-        if (_isRunMode && nextStep == unit.Pos && !_isChangingMode)
+
+        if (_isChangingMode)
         {
-            _isChangingMode = true;
+            return unit.Pos;
         }
 
-        if (_isRunMode && !_isChangingMode)
+        if (!_isRunMode && nextStep != unit.Pos)
+        {
+            TimeBeforeChange = _changingTime;
+        }
+
+        if (_isRunMode)
         {
             return nextStep;
         }
@@ -65,12 +87,17 @@ public class ThirdUnitBrain : DefaultPlayerUnitBrain
     {
         var targets =  base.SelectTargets();
 
-        if (targets.Count == 0 && _isAttackMode && !_isChangingMode)
+        if (_isChangingMode)
         {
-            _isChangingMode = true;
+            return new List<Vector2Int>();
         }
 
-        if (targets.Count > 0 && _isAttackMode && !_isChangingMode)
+        if (targets.Count > 0 && !_isAttackMode)
+        {
+            TimeBeforeChange = _changingTime;
+        }
+
+        if (_isAttackMode)
         {
             return targets;
         }
