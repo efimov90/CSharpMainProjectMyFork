@@ -3,7 +3,6 @@ using Model.Runtime.Projectiles;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Utilities;
 
 namespace UnitBrains.Player
 {
@@ -63,7 +62,7 @@ namespace UnitBrains.Player
                 }
                 else
                 {
-                    position = unit.Pos.CalcNextStepTowards(target);
+                    position = base.GetNextStep();
                 }
             }
 
