@@ -30,10 +30,10 @@ namespace UnitBrains.Pathfinding
 
             foreach (var cell in GetPath())
             {
-                found = cell == unitPos;
-
                 if (found)
                     return cell;
+
+                found = cell == unitPos;
             }
 
             Debug.LogError($"Unit {unitPos} is not on the path");
