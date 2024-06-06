@@ -8,18 +8,19 @@ namespace Assets.Scripts.UnitBrains.Pathfinding
 {
     public partial class AStarPath : BaseUnitPath
     {
-        private int MaxLength = 100;
+        private int _maxLength = 100;
 
-        private Vector2Int[] successors = {
+        private readonly Vector2Int[] _directions = {
             Vector2Int.down,
             Vector2Int.left,
             Vector2Int.up,
             Vector2Int.right,
         };
 
-        public AStarPath(IReadOnlyRuntimeModel runtimeModel, Vector2Int startPoint, Vector2Int endPoint) : base(runtimeModel, startPoint, endPoint)
+        public AStarPath(IReadOnlyRuntimeModel runtimeModel, Vector2Int startPoint, Vector2Int endPoint)
+            : base(runtimeModel, startPoint, endPoint)
         {
-            MaxLength = runtimeModel.RoMap.Width * runtimeModel.RoMap.Height;
+            _maxLength = runtimeModel.RoMap.Width * runtimeModel.RoMap.Height;
         }
 
         protected override void Calculate()
@@ -35,48 +36,53 @@ namespace Assets.Scripts.UnitBrains.Pathfinding
 
         private List<Vector2Int> getPathFromNode(AStarPathNode node)
         {
-            List<Vector2Int> _path = new();
+            var _path = new List<Vector2Int>();
+
             while (node != null)
             {
                 _path.Add(node.ToVector2());
                 node = node.Parent;
             }
+
             return _path;
         }
 
-        private AStarPathNode getBestNode(List<AStarPathNode> frontier)
+        private AStarPathNode getBestNode(List<AStarPathNode> openlist)
         {
-            if (frontier.Count == 0)
+            if (openlist.Count == 0)
             {
                 return null;
             }
+
             int bestIndex = 0;
 
-            for (int i = 0; i < frontier.Count; i++)
+            for (int i = 0; i < openlist.Count; i++)
             {
-                if (frontier[i].Value < frontier[bestIndex].Value)
+                if (openlist[i].Value < openlist[bestIndex].Value)
                 {
                     bestIndex = i;
                 }
             }
-            AStarPathNode bestNode = frontier[bestIndex];
-            frontier.RemoveAt(bestIndex);
+
+            AStarPathNode bestNode = openlist[bestIndex];
+            openlist.RemoveAt(bestIndex);
+
             return bestNode;
         }
 
         private AStarPathNode CalculateAStar(Vector2Int fromPos, Vector2Int toPos)
         {
-            AStarPathNode startNode = new(fromPos);
+            var startNode = new AStarPathNode(fromPos);
             startNode.CalculateEstimate(toPos.x, toPos.y);
-            List<AStarPathNode> frontier = new() { startNode };
-            HashSet<Vector2Int> visited = new();
+            var openList = new List<AStarPathNode> { startNode };
+            var closedList = new HashSet<Vector2Int>();
             bool routeFound = false;
             var counter = 0;
             AStarPathNode currentNode = null;
 
-            while (frontier.Count > 0 && counter++ < MaxLength)
+            while (openList.Count > 0 && counter++ < _maxLength)
             {
-                currentNode = getBestNode(frontier);
+                currentNode = getBestNode(openList);
                 if (currentNode == null)
                 {
                     break;
@@ -87,22 +93,27 @@ namespace Assets.Scripts.UnitBrains.Pathfinding
                     return currentNode;
                 }
 
-                visited.Add(currentNode.ToVector2());
+                closedList.Add(currentNode.ToVector2());
 
-                for (int i = 0; i < successors.Length; i++)
+                for (int i = 0; i < _directions.Length; i++)
                 {
-                    Vector2Int s = successors[i];
-                    Vector2Int neighborPoint = currentNode.ToVector2() + s;
+                    Vector2Int direction = _directions[i];
+                    Vector2Int neighborPoint = currentNode.ToVector2() + direction;
 
-                    if (visited.Contains(neighborPoint))
+                    if (closedList.Contains(neighborPoint))
+                    {
                         continue;
+                    }
 
                     if (neighborPoint == endPoint)
                     {
                         routeFound = true;
                     }
+
                     if (IsTileValid(neighborPoint) || routeFound)
-                        CalculateNeigborWeights(frontier, currentNode, neighborPoint, endPoint);
+                    {
+                        CalculateNeigborWeights(openList, currentNode, neighborPoint, endPoint);
+                    }
                 }
 
             }
