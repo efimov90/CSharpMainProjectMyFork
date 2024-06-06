@@ -8,101 +8,124 @@ namespace Assets.Scripts.UnitBrains.Pathfinding
 {
     public partial class AStarPath : BaseUnitPath
     {
-        private readonly int[] _dx = new int[] { -1,  0,  1,  1 };
-        private readonly int[] _dy = new int[] {  0,  1,  0, -1 };
+        private int MaxLength = 100;
 
-        public AStarPath(
-            IReadOnlyRuntimeModel runtimeModel,
-            Vector2Int startPoint,
-            Vector2Int endPoint)
-            : base(runtimeModel, startPoint, endPoint)
+        private Vector2Int[] successors = {
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.up,
+            Vector2Int.right,
+        };
+
+        public AStarPath(IReadOnlyRuntimeModel runtimeModel, Vector2Int startPoint, Vector2Int endPoint) : base(runtimeModel, startPoint, endPoint)
         {
+            MaxLength = runtimeModel.RoMap.Width * runtimeModel.RoMap.Height;
         }
-
-        public int Value { get; private set; } = 0;
 
         protected override void Calculate()
         {
-            path = FindPath();
-
-            if (path is null)
+            var route = CalculateAStar(startPoint, endPoint);
+            if (route != null)
             {
-                path = new Vector2Int[] { StartPoint };
+                var r = getPathFromNode(route);
+                r.Reverse();
+                path = r.ToArray();
             }
         }
 
-        public Vector2Int[] FindPath()
+        private List<Vector2Int> getPathFromNode(AStarPathNode node)
         {
-            var startNode = new AStarPathNode(StartPoint);
-            var targetNode = new AStarPathNode(EndPoint);
-
-            var openList = new List<AStarPathNode> { startNode };
-            var closedList = new List<AStarPathNode>();
-
-            while (openList.Count > 0)
+            List<Vector2Int> _path = new();
+            while (node != null)
             {
-                var currentNode = openList.First();
-
-                foreach (var node in openList)
-                {
-                    if (node.Value < currentNode.Value)
-                    {
-                        currentNode = node;
-                    }
-                }
-
-                openList.Remove(currentNode);
-                closedList.Add(currentNode);
-
-                if (currentNode.Equals(targetNode))
-                {
-                    var path = new List<AStarPathNode>();
-
-                    while (currentNode != null)
-                    {
-                        path.Add(currentNode);
-                        currentNode = currentNode.Parent;
-                    }
-
-                    path.Reverse();
-                    return path.Select(x => x.ToVector2()).ToArray();
-                }
-
-                for (int i = 0; i < _dx.Length; i++)
-                {
-                    var newPoint = new Vector2Int(currentNode.X + _dx[i], currentNode.Y + _dy[i]);
-
-                    if(!IsWalkable(newPoint) && newPoint != EndPoint)
-                    {
-                        continue;
-                    }
-
-                    var neighbour = new AStarPathNode(newPoint);
-
-                    if (closedList.Contains(neighbour))
-                    {
-                        continue;
-                    }
-
-                    neighbour.Parent = currentNode;
-                    neighbour.CalculateEstimate(targetNode.X, targetNode.Y);
-
-                    if (!openList.Contains(neighbour))
-                    {
-                        openList.Add(neighbour);
-                    }
-                }
+                _path.Add(node.ToVector2());
+                node = node.Parent;
             }
-
-            return null;
+            return _path;
         }
 
-        private bool IsWalkable(Vector2Int point) =>
-            runtimeModel.IsTileWalkable(point)
-            && point.x > 0
-            && point.y > 0
-            && point.x < runtimeModel.RoMap.Width
-            && point.y < runtimeModel.RoMap.Height
-            && !runtimeModel.RoUnits.Any(x => x.Pos == point);
+        private AStarPathNode getBestNode(List<AStarPathNode> frontier)
+        {
+            if (frontier.Count == 0)
+            {
+                return null;
+            }
+            int bestIndex = 0;
+
+            for (int i = 0; i < frontier.Count; i++)
+            {
+                if (frontier[i].Value < frontier[bestIndex].Value)
+                {
+                    bestIndex = i;
+                }
+            }
+            AStarPathNode bestNode = frontier[bestIndex];
+            frontier.RemoveAt(bestIndex);
+            return bestNode;
+        }
+
+        private AStarPathNode CalculateAStar(Vector2Int fromPos, Vector2Int toPos)
+        {
+            AStarPathNode startNode = new(fromPos);
+            startNode.CalculateEstimate(toPos.x, toPos.y);
+            List<AStarPathNode> frontier = new() { startNode };
+            HashSet<Vector2Int> visited = new();
+            bool routeFound = false;
+            var counter = 0;
+            AStarPathNode currentNode = null;
+
+            while (frontier.Count > 0 && counter++ < MaxLength)
+            {
+                currentNode = getBestNode(frontier);
+                if (currentNode == null)
+                {
+                    break;
+                }
+
+                if (routeFound)
+                {
+                    return currentNode;
+                }
+
+                visited.Add(currentNode.ToVector2());
+
+                for (int i = 0; i < successors.Length; i++)
+                {
+                    Vector2Int s = successors[i];
+                    Vector2Int neighborPoint = currentNode.ToVector2() + s;
+
+                    if (visited.Contains(neighborPoint))
+                        continue;
+
+                    if (neighborPoint == endPoint)
+                    {
+                        routeFound = true;
+                    }
+                    if (IsTileValid(neighborPoint) || routeFound)
+                        CalculateNeigborWeights(frontier, currentNode, neighborPoint, endPoint);
+                }
+
+            }
+            return currentNode;
+        }
+
+        private bool IsTileValid(Vector2Int neighborPoint) =>
+            neighborPoint.x >= 0
+            && neighborPoint.x < runtimeModel.RoMap.Width
+            && neighborPoint.y >= 0
+            && neighborPoint.y < runtimeModel.RoMap.Height
+            && runtimeModel.IsTileWalkable(neighborPoint);
+
+        private void CalculateNeigborWeights(List<AStarPathNode> openList, AStarPathNode currentNode, Vector2Int neighborPoint, Vector2Int endPoint)
+        {
+            if (!openList.Any(n => n.ToVector2() == neighborPoint))
+            {
+                var newNode = new AStarPathNode(neighborPoint);
+                newNode.CalculateEstimate(endPoint.x, endPoint.y);
+                newNode.Parent = currentNode;
+
+                openList.Add(newNode);
+            }
+        }
     }
 }
