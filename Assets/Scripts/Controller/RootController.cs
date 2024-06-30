@@ -17,12 +17,15 @@ namespace Controller
 
         public RootController(Settings settings, Canvas targetCanvas)
         {
+            var timeUtil = TimeUtil.Create();
             _persisted = PersistanceUtils.LoadSingleton(new PersistedModel());
-            ServiceLocator.Register(TimeUtil.Create());
+            ServiceLocator.Register(timeUtil);
             
             _runtimeModel = new();
             ServiceLocator.RegisterAs(_runtimeModel, typeof(IReadOnlyRuntimeModel));
-            ServiceLocator.RegisterAs(UnitCoordinator.GetInstance(), typeof(UnitCoordinator));
+
+            var unitCoordinator = new UnitCoordinator(_runtimeModel, timeUtil);
+            ServiceLocator.Register(unitCoordinator);
             
             SpawnRootVisual(targetCanvas);
             ServiceLocator.Register(_rootView);
