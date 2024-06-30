@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.UnitBrains;
 using Assets.Scripts.UnitBrains.Pathfinding;
 using Model;
 using Model.Runtime.Projectiles;
@@ -19,8 +21,9 @@ namespace UnitBrains
         
         protected Unit unit { get; private set; }
         protected IReadOnlyRuntimeModel runtimeModel => ServiceLocator.Get<IReadOnlyRuntimeModel>();
+        protected UnitCoordinator _unitCoordinator;
         private BaseUnitPath _activePath = null;
-        
+
         private readonly Vector2[] _projectileShifts = new Vector2[]
         {
             new (0f, 0f),
@@ -34,14 +37,26 @@ namespace UnitBrains
 
         public virtual Vector2Int GetNextStep()
         {
+            var recomendedTarget = _unitCoordinator.GetRecomendedTargetFor(this);
+
             if (HasTargetsInRange())
                 return unit.Pos;
 
             var target = runtimeModel.RoMap.Bases[
                 IsPlayerUnitBrain ? RuntimeModel.BotPlayerId : RuntimeModel.PlayerId];
 
+            if (recomendedTarget != null && HasRecomendedTargetInRange(recomendedTarget.Value))
+            {
+                target = recomendedTarget.Value;
+            }
+
             _activePath = new AStarPath(runtimeModel, unit.Pos, target);
             return _activePath.GetNextStepFrom(unit.Pos);
+        }
+
+        private bool HasRecomendedTargetInRange(Vector2Int recomendedTarget)
+        {
+            return (recomendedTarget - unit.Pos).sqrMagnitude <= MathF.Pow(unit.Config.AttackRange, 2);
         }
 
         public List<BaseProjectile> GetProjectiles()
@@ -163,6 +178,11 @@ namespace UnitBrains
             }
 
             return result;
+        }
+
+        internal void SetCoordinator(UnitCoordinator unitCoordinator)
+        {
+            _unitCoordinator = unitCoordinator;
         }
     }
 }

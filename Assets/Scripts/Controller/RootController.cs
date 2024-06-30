@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Assets.Scripts.UnitBrains;
+using Model;
 using Model.Config;
 using UnityEngine;
 using Utilities;
@@ -21,6 +22,7 @@ namespace Controller
             
             _runtimeModel = new();
             ServiceLocator.RegisterAs(_runtimeModel, typeof(IReadOnlyRuntimeModel));
+            ServiceLocator.RegisterAs(UnitCoordinator.GetInstance(), typeof(UnitCoordinator));
             
             SpawnRootVisual(targetCanvas);
             ServiceLocator.Register(_rootView);
