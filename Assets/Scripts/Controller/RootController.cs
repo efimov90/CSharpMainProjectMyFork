@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.UnitBrains;
+﻿using Assets.Scripts.Model.Runtime.Effects;
+using Assets.Scripts.UnitBrains;
 using Model;
 using Model.Config;
 using UnityEngine;
@@ -23,6 +24,9 @@ namespace Controller
             
             _runtimeModel = new();
             ServiceLocator.RegisterAs(_runtimeModel, typeof(IReadOnlyRuntimeModel));
+
+            var effectsManager = new EffectManager();
+            ServiceLocator.Register(effectsManager);
 
             var unitCoordinator = new UnitCoordinator(_runtimeModel, timeUtil);
             ServiceLocator.Register(unitCoordinator);
