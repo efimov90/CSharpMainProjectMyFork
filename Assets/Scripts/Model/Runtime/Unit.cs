@@ -21,6 +21,8 @@ namespace Model.Runtime
         public BaseUnitPath ActivePath => _brain?.ActivePath;
         public IReadOnlyList<BaseProjectile> PendingProjectiles => _pendingProjectiles;
 
+        public bool HasEffect => _effectManager.HasEffect(_brain);
+
         private readonly List<BaseProjectile> _pendingProjectiles = new();
         private IReadOnlyRuntimeModel _runtimeModel;
         private EffectManager _effectManager;
@@ -42,15 +44,20 @@ namespace Model.Runtime
             _effectManager = ServiceLocator.Get<EffectManager>();
         }
 
+        public void AddEffect()
+        {
+            _effectManager.AddEffect(_brain);
+        }
+
         public void Update(float deltaTime, float time)
         {
             if (IsDead)
             {
-                _effectManager.RemoveAllEffects(this);
+                _effectManager.RemoveEffect(_brain);
                 return;
             }
 
-            _effectManager.UpdateEffectsDuration(this);
+            _effectManager.UpdateEffectsDuration();
 
             if (_nextBrainUpdateTime < time)
             {
@@ -60,13 +67,13 @@ namespace Model.Runtime
             
             if (_nextMoveTime < time)
             {
-                _nextMoveTime = time + Config.MoveDelay * _effectManager.GetMoveDelayModifier(this);
+                _nextMoveTime = time + Config.MoveDelay;
                 Move();
             }
             
             if (_nextAttackTime < time && Attack())
             {
-                _nextAttackTime = time + Config.AttackDelay * _effectManager.GetAttackDelayModifier(this);
+                _nextAttackTime = time + Config.AttackDelay;
             }
         }
 

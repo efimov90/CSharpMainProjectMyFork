@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.UnitBrains;
 using Assets.Scripts.UnitBrains.Pathfinding;
@@ -19,6 +18,10 @@ namespace UnitBrains
         public virtual bool IsPlayerUnitBrain => true;
         public virtual BaseUnitPath ActivePath => _activePath;
         
+        public virtual float AttackRange => unit.Config.AttackRange;
+
+        public float AttackRangeSqr => AttackRange * AttackRange;
+
         protected Unit unit { get; private set; }
         protected IReadOnlyRuntimeModel runtimeModel => ServiceLocator.Get<IReadOnlyRuntimeModel>();
         protected UnitCoordinator _unitCoordinator;
@@ -56,7 +59,7 @@ namespace UnitBrains
 
         private bool HasRecomendedTargetInRange(Vector2Int recomendedTarget)
         {
-            return (recomendedTarget - unit.Pos).sqrMagnitude <= MathF.Pow(unit.Config.AttackRange, 2);
+            return (recomendedTarget - unit.Pos).sqrMagnitude <= AttackRangeSqr;
         }
 
         public List<BaseProjectile> GetProjectiles()
@@ -133,11 +136,10 @@ namespace UnitBrains
 
         protected bool HasTargetsInRange()
         {
-            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
             foreach (var possibleTarget in GetAllTargets())
             {
                 var diff = possibleTarget - unit.Pos;
-                if (diff.sqrMagnitude < attackRangeSqr)
+                if (diff.sqrMagnitude < AttackRangeSqr)
                     return true;
             }
 
@@ -160,15 +162,13 @@ namespace UnitBrains
 
         protected bool IsTargetInRange(Vector2Int targetPos)
         {
-            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
             var diff = targetPos - unit.Pos;
-            return diff.sqrMagnitude <= attackRangeSqr;
+            return diff.sqrMagnitude <= AttackRangeSqr;
         }
 
         protected List<Vector2Int> GetReachableTargets()
         {
             var result = new List<Vector2Int>();
-            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
             foreach (var possibleTarget in GetAllTargets())
             {
                 if (!IsTargetInRange(possibleTarget))

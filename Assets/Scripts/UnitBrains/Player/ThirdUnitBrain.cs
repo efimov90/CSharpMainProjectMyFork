@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnitBrains.Player;
 using UnityEngine;
@@ -12,6 +13,12 @@ public class ThirdUnitBrain : DefaultPlayerUnitBrain
     private bool _isAttackMode = false;
     private bool _isChangingMode = false;
     private float _timeBeforeChange = 0f;
+    private bool _isDoubleRange;
+
+    public override float AttackRange
+        => _isDoubleRange
+        ? base.AttackRange * 2
+        : base.AttackRange;
 
     public float TimeBeforeChange
     {
@@ -103,5 +110,15 @@ public class ThirdUnitBrain : DefaultPlayerUnitBrain
         }
 
         return new List<Vector2Int>();
+    }
+
+    internal void ApplyDoubleRange()
+    {
+        _isDoubleRange = true;
+    }
+
+    internal void RemoveDoubleRange()
+    {
+        _isDoubleRange = false;
     }
 }

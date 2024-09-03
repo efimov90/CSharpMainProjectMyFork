@@ -39,16 +39,9 @@ namespace Assets.Scripts.UnitBrains.Player
                 .Where(u => u.Pos == forTarget)
                 .FirstOrDefault();
 
-            var effects = _effectManager.GetEffectsOnTarget(unitToBuff);
-
-            var availableEffectsToAdd = Effect.AvailableBuffEffects.Except(effects.Select(e => e.GetType()))
-                .ToList();
-
-            if (availableEffectsToAdd.Any())
+            if (!(unitToBuff as Unit).HasEffect)
             {
-                var index = _random.Next(availableEffectsToAdd.Count - 1);
-
-                _effectManager.AddEffect(unitToBuff as Unit, availableEffectsToAdd[index]);
+                (unitToBuff as Unit).AddEffect();
 
                 _vfxView.PlayVFX(unitToBuff.Pos, VFXView.VFXType.BuffApplied);
 

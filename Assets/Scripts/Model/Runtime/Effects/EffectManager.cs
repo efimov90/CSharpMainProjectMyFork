@@ -1,130 +1,89 @@
-﻿using Model.Runtime;
-using Model.Runtime.ReadOnly;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnitBrains;
 using UnityEngine;
 
 namespace Assets.Scripts.Model.Runtime.Effects
 {
     public class EffectManager
     {
-        public ConcurrentDictionary<Unit, List<Effect>> _appliedEffectsToUnit = new ConcurrentDictionary<Unit, List<Effect>>();
+        public Dictionary<BaseUnitBrain, IEffect<BaseUnitBrain>> _appliedEffectsToUnits = new Dictionary<BaseUnitBrain, IEffect<BaseUnitBrain>>();
 
-        public float GetAttackDelayModifier(Unit unit)
+        public void AddEffect(BaseUnitBrain unitBrain)
         {
-            if(_appliedEffectsToUnit.TryGetValue(unit, out var effects))
-            {
-                var attackModifiers = effects.Select(e => e.AttackDelayModifier);
+            var unitBrainType = unitBrain.GetType();
 
-                var result = 1f;
-
-                foreach (var attackModifier in attackModifiers)
-                {
-                    result *= attackModifier;
-                }
-
-                return result;
-            }
-            else
-            {
-                return 1;
-            }
-        }
-
-        public float GetMoveDelayModifier(Unit unit)
-        {
-            if (_appliedEffectsToUnit.TryGetValue(unit, out var effects))
-            {
-                var moveDelayModifiers = effects.Select(e => e.MoveDelayModifier);
-
-                var result = 1f;
-
-                foreach (var moveDelayModifier in moveDelayModifiers)
-                {
-                    result *= moveDelayModifier;
-                }
-
-                return result;
-            }
-            else
-            {
-                return 1;
-            }
-        }
-
-        public void AddEffect<TEffect>(Unit unit)
-            where TEffect : Effect, new()
-        {
-            var effectsList = new List<Effect>();
-
-            _appliedEffectsToUnit.GetOrAdd(unit, effectsList);
-
-            effectsList.Add(new TEffect());
-        }
-
-        public void AddEffect(Unit unit, Type type)
-        {
-            if (!typeof(Effect).IsAssignableFrom(type))
+            if (_appliedEffectsToUnits.ContainsKey(unitBrain))
             {
                 return;
             }
 
-            var effectsList = new List<Effect>();
+            var generic = typeof(Effect<>);
 
-            _appliedEffectsToUnit.GetOrAdd(unit, effectsList);
+            var typeDefinition = generic.GetGenericTypeDefinition();
 
-            var effectToAdd = (Effect)Activator.CreateInstance(type);
+            Type[] typeArgs = { unitBrainType };
 
-            effectsList.Add(effectToAdd);
+            Type constructed = generic.MakeGenericType(typeArgs);
+
+            var appliableToUnitBrainEffect = typeof(EffectManager).Assembly
+                .GetTypes()
+                .Where(x =>
+                    !x.IsAbstract
+                    && x.IsClass
+                    && constructed.IsAssignableFrom(x))
+                .FirstOrDefault();
+
+            if(appliableToUnitBrainEffect is null)
+            {
+                return;
+            }
+
+            IEffect<BaseUnitBrain> effect = (IEffect<BaseUnitBrain>)Activator.CreateInstance(appliableToUnitBrainEffect);
+
+            effect.AddEffect(unitBrain);
+
+            _appliedEffectsToUnits.Add(unitBrain, effect);
         }
 
-        public void UpdateEffectsDuration(Unit unit)
+        public void UpdateEffectsDuration()
         {
             var time = Time.deltaTime;
 
-            if (_appliedEffectsToUnit.TryGetValue(unit, out var effectsList))
+            foreach (var effect in _appliedEffectsToUnits.Values)
             {
-                foreach (var effect in effectsList)
-                {
-                    effect.Duration -= time;
-                }
-
-                var effectsToRemove = effectsList.Where(e => e.Duration <= 0).ToList();
-
-                if(!effectsToRemove.Any())
-                {
-                    return;
-                }
-
-                foreach (var effectToRemove in effectsToRemove)
-                {
-                    effectsList.Remove(effectToRemove);
-                }
-
-                effectsToRemove.Clear();
+                effect.Duration -= time;
             }
+
+            var effectsToRemove = _appliedEffectsToUnits.Where(kv => kv.Value.Duration <= 0).ToList();
+
+            if(!effectsToRemove.Any())
+            {
+                return;
+            }
+
+            foreach (var effectToRemove in effectsToRemove)
+            {
+                effectToRemove.Value.RemoveEffect(effectToRemove.Key);
+                _appliedEffectsToUnits.Remove(effectToRemove.Key);
+            }
+
+            effectsToRemove.Clear();
         }
 
-        public void RemoveAllEffects(Unit unit)
+        internal bool HasEffect(BaseUnitBrain brain)
         {
-            if (_appliedEffectsToUnit.ContainsKey(unit))
-            {
-                _appliedEffectsToUnit.TryRemove(unit, out var _);
-            }
+            return _appliedEffectsToUnits.ContainsKey(brain);
         }
 
-        public IEnumerable<Effect> GetEffectsOnTarget(IReadOnlyUnit unitToBuff)
+        internal void RemoveEffect(BaseUnitBrain brain)
         {
-            if(_appliedEffectsToUnit.TryGetValue(unitToBuff as Unit, out var effects))
+            if(!HasEffect(brain))
             {
-                return effects;
+                return;
             }
-            else
-            {
-                return Enumerable.Empty<Effect>();
-            }
+            _appliedEffectsToUnits.Remove(brain);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Model;
 using Model.Runtime.Projectiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace UnitBrains.Player
         private const int MaxTargetsCount = 3;
         private static int _unitNumberCounter = 0;
         private int _unitNumber;
+
+        private bool _isDoubleShot = false;
 
         private List<Vector2Int> _unreacheabletargets = new List<Vector2Int>();
 
@@ -43,6 +46,11 @@ namespace UnitBrains.Player
             {
                 var projectile = CreateProjectile(forTarget);
                 AddProjectileToList(projectile, intoList);
+                if (_isDoubleShot)
+                {
+                    projectile = CreateProjectile(forTarget);
+                    AddProjectileToList(projectile, intoList);
+                }
             }
 
             IncreaseTemperature();
@@ -131,6 +139,16 @@ namespace UnitBrains.Player
         {
             _temperature += 1f;
             if (_temperature >= OverheatTemperature) _overheated = true;
+        }
+
+        internal void ApplyDoubleShot()
+        {
+            _isDoubleShot = true;
+        }
+
+        internal void RemoveDoubleShot()
+        {
+            _isDoubleShot = false;
         }
     }
 }
