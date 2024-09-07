@@ -82,7 +82,6 @@
     <Compile Include="Assets\Scripts\Model\Runtime\Map.cs" />
     <Compile Include="Assets\Scripts\UnitBrains\Pathfinding\DebugPathOutput.cs" />
     <Compile Include="Assets\Scripts\Model\Config\Settings.cs" />
-    <Compile Include="Assets\Scripts\Model\Runtime\Effects\IEffect.cs" />
     <Compile Include="Assets\Scripts\Model\Config\UnitConfig.cs" />
     <Compile Include="Assets\Scripts\Utilities\PersistanceUtils.cs" />
     <Compile Include="Assets\Scripts\View\RootView.cs" />

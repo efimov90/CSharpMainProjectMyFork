@@ -3,24 +3,20 @@
   "WorkspaceRootPath": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|W:\\Development\\Unity\\CSharpMainProjectMyFork\\assets\\scripts\\model\\runtime\\effects\\effectmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|w:\\development\\unity\\csharpmainprojectmyfork\\assets\\scripts\\model\\runtime\\effects\\effectmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|solutionrelative:assets\\scripts\\model\\runtime\\effects\\effectmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|w:\\development\\unity\\csharpmainprojectmyfork\\assets\\scripts\\model\\runtime\\effects\\ieffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|solutionrelative:assets\\scripts\\model\\runtime\\effects\\ieffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|w:\\development\\unity\\csharpmainprojectmyfork\\assets\\scripts\\model\\runtime\\effects\\effect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|W:\\Development\\Unity\\CSharpMainProjectMyFork\\assets\\scripts\\model\\runtime\\effects\\effect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|solutionrelative:assets\\scripts\\model\\runtime\\effects\\effect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|W:\\Development\\Unity\\CSharpMainProjectMyFork\\assets\\scripts\\unitbrains\\player\\skybufferunitbrain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|solutionrelative:assets\\scripts\\unitbrains\\player\\skybufferunitbrain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|W:\\Development\\Unity\\CSharpMainProjectMyFork\\assets\\scripts\\model\\runtime\\unit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|solutionrelative:assets\\scripts\\model\\runtime\\unit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|W:\\Development\\Unity\\CSharpMainProjectMyFork\\assets\\scripts\\unitbrains\\player\\skybufferunitbrain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12C09C7-888C-7364-148B-3BC33A05AB3F}|Root.csproj|solutionrelative:assets\\scripts\\unitbrains\\player\\skybufferunitbrain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 185,
-          "SelectedChildIndex": 23,
+          "SelectedChildIndex": 21,
           "Children": [
             {
               "$type": "Bookmark",
@@ -118,52 +114,38 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "IEffect.cs",
-              "DocumentMoniker": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\IEffect.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Model\\Runtime\\Effects\\IEffect.cs",
-              "ToolTip": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\IEffect.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Model\\Runtime\\Effects\\IEffect.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-03T21:13:11.554Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Effect.cs",
-              "DocumentMoniker": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
-              "ToolTip": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-03T21:10:06.256Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "EffectManager.cs",
               "DocumentMoniker": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\EffectManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Model\\Runtime\\Effects\\EffectManager.cs",
               "ToolTip": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\EffectManager.cs",
               "RelativeToolTip": "Assets\\Scripts\\Model\\Runtime\\Effects\\EffectManager.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAQwB0AAABDAAAAAAAAAA==",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAcwDcAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-03T20:46:48.728Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
+              "Title": "Effect.cs",
+              "DocumentMoniker": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
+              "ToolTip": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Model\\Runtime\\Effects\\Effect.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-03T21:10:06.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Unit.cs",
               "DocumentMoniker": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Unit.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Model\\Runtime\\Unit.cs",
               "ToolTip": "W:\\Development\\Unity\\CSharpMainProjectMyFork\\Assets\\Scripts\\Model\\Runtime\\Unit.cs",
               "RelativeToolTip": "Assets\\Scripts\\Model\\Runtime\\Unit.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAgwBcAAAA4AAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAAAxwCUAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-03T20:46:11.349Z"
             },

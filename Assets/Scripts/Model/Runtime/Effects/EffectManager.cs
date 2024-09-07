@@ -2,28 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnitBrains;
+using UnitBrains.Player;
 using UnityEngine;
 
 namespace Assets.Scripts.Model.Runtime.Effects
 {
     public class EffectManager
     {
-        public Dictionary<BaseUnitBrain, IEffect<BaseUnitBrain>> _appliedEffectsToUnits = new Dictionary<BaseUnitBrain, IEffect<BaseUnitBrain>>();
+        public Dictionary<BaseUnitBrain, Effect> _appliedEffectsToUnits = new Dictionary<BaseUnitBrain, Effect>();
 
         public void AddEffect(BaseUnitBrain unitBrain)
         {
-            var unitBrainType = unitBrain.GetType();
-
             if (_appliedEffectsToUnits.ContainsKey(unitBrain))
             {
                 return;
             }
+           
+            if(unitBrain is SecondUnitBrain secondUnitBrain)
+            {
+                AddEffect(secondUnitBrain);
+            }
 
+            if (unitBrain is ThirdUnitBrain thirdUnitBrain)
+            {
+                AddEffect(thirdUnitBrain);
+            }
+        }
+
+        private void AddEffect<TUnitBrain>(TUnitBrain unitBrain)
+            where TUnitBrain : BaseUnitBrain
+        {
             var generic = typeof(Effect<>);
 
             var typeDefinition = generic.GetGenericTypeDefinition();
 
-            Type[] typeArgs = { unitBrainType };
+            Type[] typeArgs = { typeof(TUnitBrain) };
 
             Type constructed = generic.MakeGenericType(typeArgs);
 
@@ -35,12 +48,17 @@ namespace Assets.Scripts.Model.Runtime.Effects
                     && constructed.IsAssignableFrom(x))
                 .FirstOrDefault();
 
-            if(appliableToUnitBrainEffect is null)
+            if (appliableToUnitBrainEffect is null)
             {
                 return;
             }
 
-            IEffect<BaseUnitBrain> effect = (IEffect<BaseUnitBrain>)Activator.CreateInstance(appliableToUnitBrainEffect);
+            Effect<TUnitBrain> effect = (Effect<TUnitBrain>)Activator.CreateInstance(appliableToUnitBrainEffect);
+
+            if (effect is null)
+            {
+                return;
+            }
 
             effect.AddEffect(unitBrain);
 
@@ -65,7 +83,7 @@ namespace Assets.Scripts.Model.Runtime.Effects
 
             foreach (var effectToRemove in effectsToRemove)
             {
-                effectToRemove.Value.RemoveEffect(effectToRemove.Key);
+                RemoveEffect(effectToRemove.Key);
                 _appliedEffectsToUnits.Remove(effectToRemove.Key);
             }
 

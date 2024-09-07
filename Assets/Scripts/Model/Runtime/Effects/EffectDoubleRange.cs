@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Model.Runtime.Effects
+﻿using System.Reflection;
+
+namespace Assets.Scripts.Model.Runtime.Effects
 {
     public class EffectDoubleRange : Effect<ThirdUnitBrain>
     {
